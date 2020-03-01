@@ -1,23 +1,24 @@
 // REQUIRE
 const fetch = require("node-fetch").default;
-const cheerio = require('cheerio').default;
+const cheerio = require("cheerio");
 
 //---INIT---//
 Init_Message();
 
-var DEF = Lottery_Definition();
+//Lottery_Definition();
 
 
-console.log(`DEF::${DEF}`);
+
 
 //---SATURDAY GOLD LOTTO RESULTS---//
+GoldLotto_Results_Saturday();
 
 
 
 function Lottery_Definition ()
 {
     const wiktionary_url = 'https://en.wiktionary.org/wiki/lottery';
-    //var definition = '';
+    var definition = '';
 
     fetch(wiktionary_url).then( response =>
         {
@@ -25,11 +26,15 @@ function Lottery_Definition ()
             //-Parse the body text
             response.text().then( body => 
                 {
+                    //***CHEERIO***//
                     const $ = cheerio.load(body);
-                    $('ol').each( (i, element) => 
+                    $('ol li').each( (i, element) => 
                     {
-                        console.log(element);
+                        //-Get the first list element/definition
+                        if( i==0 ) definition = $(element).text();
                     });
+
+                    return definition;
 
 
                     // //***VANILLA JS ***/
@@ -47,6 +52,31 @@ function Lottery_Definition ()
         });
 }
 
+function GoldLotto_Results_Saturday ()
+{
+    let results_url = 'https://www.ozlotteries.com/saturday-lotto/results';
+
+    fetch(results_url).then( response =>
+        {
+            console.log("Fetch status:: " + response.status + " | URL:: " + results_url);
+            //-Parse the body text
+            response.text().then( body => 
+                {
+                    //***CHEERIO***//
+                    console.log("BANG!");
+                    //console.log(body);
+                    const $ = cheerio.load(body);
+                    $('[data-id=drawNumber_number]').each((i, element) => 
+                    {
+
+                        console.log($(element).text());
+                        
+                    });
+
+                });
+        });
+
+}
 
 function Init_Message ()
 {
