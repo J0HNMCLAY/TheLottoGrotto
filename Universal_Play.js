@@ -35,3 +35,4 @@ function Six_Pick (no1,no2,no3,no4,no5,no6,s1,s2)
     this.Main_Numbers = [no1,no2,no3,no4,no5,no6]; 
     this.Supp_Numbers = [s1,s2];
 }
+
