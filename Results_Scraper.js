@@ -8,6 +8,15 @@ Init_Message();
 
 //Lottery_Definition();
 
+//-Game type enumerator
+const GAME_TYPE = {
+    Saturday_Lotto  : 'Saturday Lotto',
+    Monday_Lotto    : 'Monday Lotto',
+    Wednesday_Lotto : 'Wednesday Lotto',
+    Powerball       : 'Powerball',
+    Oz_Lotto        : 'Oz Lotto',
+    Set_For_Life    : 'Set For Life'
+};
 
 
 
@@ -15,16 +24,21 @@ Init_Message();
 var Previous_Results = [];
 var Scrape_Results = [];
 
+//-Loop variables
 var MainLoop_Counter = 0;
 var MainLoop_Processing = false;
+
+const EXECUTE = false; // !! Global Override !!
 
 // MAIN LOOP
 var mainLoop = setInterval((tick) =>{
 
+    if( !EXECUTE ) { clearInterval(mainLoop); return; }
+
     if (!MainLoop_Processing) 
     {
         MainLoop_Processing = true;
-        Lotto_Monday_Setup()
+        Get_Lotto_Results_Setup()
         MainLoop_Counter++;
     }
 
@@ -33,25 +47,30 @@ var mainLoop = setInterval((tick) =>{
     //MainLoop_Counter++;
     //if( MainLoop_Counter>=5 ) clearInterval(mainLoop);
 }, 500);
-//GoldLotto_Results_Saturday_Setup();
 
 
-function Lotto_Monday_Setup ()
+function Get_Lotto_Results_Setup ()
 {
     //-Reset arrays before processing
     Previous_Results = [];
     Scrape_Results   = [];
 
-    var Year_Max = 2020;
-    var Year_Min = 2006;
+    //-Gametype determines the data scraped
+    let gameType = GAME_TYPE.Set_For_Life;
+
+    //-Archived years to loop through
+    let Year_Max = 2020;
+    let Year_Min = 2015;
     
     let YEAR = Year_Max - MainLoop_Counter; // YEAR to append to URL
 
-    var URL = 'https://australia.national-lottery.com/monday-lotto/results-archive-';
-    let mon_URL = URL + YEAR.toString(); // formatted URL
+    let URL_base = 'https://australia.national-lottery.com/set-for-life/results-archive-';
+    let URL      = URL_base + YEAR.toString(); // formatted URL
 
-    //-File path
-    var filePath = './Results_Archive/MonLotto_Results.json';
+    //-File vars
+    var fileDirectory = './Results_Archive/';
+    var fileName = 'SetForLife_Results.json';
+    var filePath = fileDirectory + fileName;
 
     //-Determine if this is the last loop...to exit MainLoop
     var finalLoop = (YEAR==Year_Min) ? true : false;
@@ -60,22 +79,22 @@ function Lotto_Monday_Setup ()
     fs.readFile(filePath, (err, data) => {
         //-Error checking...typically if the file doesn't exist!
         if (err) { }//console.log(`ERROR READING FILE::${err}`); }
-        //-Assign
+        //-Assign/collect existing results
         if (!err) Previous_Results = JSON.parse(data);
             //-Debug
             console.log(`Results file read. Length::${Previous_Results.length}`);
             //console.log(Previous_Results);
 
-        //-GET MONDAY LOTTO RESULTS
-        Lotto_Monday( mon_URL, filePath, finalLoop );
+        //-GET LOTTO RESULTS
+        Get_Lotto_Results( gameType, URL, filePath, finalLoop );
     });
 }
 
-function Lotto_Monday ( mon_lotto_url, filePath, finalLoop )
+function Get_Lotto_Results ( gameType, results_url, filePath, finalLoop )
 {
-    fetch(mon_lotto_url).then( response =>
+    fetch(results_url).then( response =>
         {
-            console.log("Fetch status:: " + response.status + " | URL:: " + mon_lotto_url);
+            console.log("Fetch status:: " + response.status + " | URL:: " + results_url);
             //-Parse the body text
             response.text().then( body => 
                 {
@@ -101,29 +120,64 @@ function Lotto_Monday ( mon_lotto_url, filePath, finalLoop )
                             childElement('[data-title=Jackpot]').first().text().replace('AU', '').trim();
 
                         //-Get the winning numbers
-                        let numbers = {
-                            winning : [],
-                            supps   : []
-                        }
-
-                        childElement('span').each( (i, element) =>
+                        // GOLD LOTTO!-------------------------------------------------------------!
+                        if( gameType==GAME_TYPE.Saturday_Lotto || gameType==GAME_TYPE.Monday_Lotto
+                        ||  gameType==GAME_TYPE.Wednesday_Lotto )
                         {
-                            let ballClass = $(element).hasClass('lotto-ball')
-                            let number    = $(element).text();
-                            //
-                            if( ballClass ) numbers.winning.push( number );
-                            if(!ballClass ) numbers.supps.push( number );
-                        });
-
-                        //-Create result object
-                        var result = new GoldLotto_Result(date, dateObj, numbers, jackpot);
-                        Scrape_Results.push( result );
+                            let numbers = { winning : [], supps : [] }
+                            // Pull winning numbers
+                            childElement('span').each( (i, element) =>
+                            {
+                                let ballClass = $(element).hasClass('lotto-ball')
+                                let number    = $(element).text();
+                                //
+                                if( ballClass ) numbers.winning.push( number );
+                                if(!ballClass ) numbers.supps.push( number );
+                            });
+                            //-Create result object
+                            var result = new GoldLotto_Result(date, dateObj, numbers, jackpot);
+                            Scrape_Results.push( result );
+                        }
+                        // POWERBALL!--------------------------------------------------------------!
+                        if( gameType==GAME_TYPE.Powerball )
+                            {
+                                let numbers = { winning : [], powerball : [] }
+                                // Pull winning numbers
+                                childElement('span').each( (i, element) =>
+                                {
+                                    let ballClass = $(element).hasClass('powerball-ball')
+                                    let number    = $(element).text();
+                                    //
+                                    if( ballClass ) numbers.winning.push( number );
+                                    if(!ballClass ) numbers.powerball.push( number );
+                                });
+                                //-Create result object
+                                var result = new Powerball_Result(date, dateObj, numbers, jackpot);
+                                Scrape_Results.push( result );
+                            }
+                        // OZ-LOTTO & SET-FOR-LIFE!-------------------------------------------------!
+                        if( gameType==GAME_TYPE.Oz_Lotto || gameType==GAME_TYPE.Set_For_Life )
+                        {
+                            let numbers = { winning : [], supps : [] }
+                            // Pull winning numbers
+                            childElement('span').each( (i, element) =>
+                            {
+                                let ballClass = $(element).hasClass('oz-lotto-ball') || $(element).hasClass('set-for-life-ball');
+                                let number    = $(element).text();
+                                //
+                                if( ballClass ) numbers.winning.push( number );
+                                if(!ballClass ) numbers.supps.push( number );
+                            });
+                            //-Create result object
+                            var result = new GoldLotto_Result(date, dateObj, numbers, jackpot);
+                            Scrape_Results.push( result );
+                        }
                     
                     });
 
                         // DEBUG
-                        console.log(`No of Prev-Results :: ${Previous_Results.length}`);
-                        console.log(`No of Mon-Results :: ${Scrape_Results.length}`);
+                        console.log(`No of Previous-Results :: ${Previous_Results.length}`);
+                        console.log(`No of Current -Results :: ${Scrape_Results.length}`);
 
                     //-Concat with previous results
                     Scrape_Results = Scrape_Results.concat(Previous_Results);
@@ -131,7 +185,7 @@ function Lotto_Monday ( mon_lotto_url, filePath, finalLoop )
                     //-Turn results into a JSON string
                     let Results_JSON = JSON.stringify(Scrape_Results);
 
-                    //-Write our JSON file
+                    //-Write our JSON file ---------------------------->>>>
                     fs.writeFile(filePath, Results_JSON, (err) => {
                         if (err) console.log(`ERROR WRITING FILE::${err}`);
                         else 
@@ -146,6 +200,7 @@ function Lotto_Monday ( mon_lotto_url, filePath, finalLoop )
                             if( finalLoop ) clearInterval(mainLoop);
                         }
                     });
+                    //------------------------------------------------->>>>>
 
                 });
         });
@@ -172,6 +227,30 @@ function GoldLotto_Result (_date, _dateObj, _numbers, _jackpot)
     this.Numbers = {
         Winning : _numbers.winning,
         Supps   : _numbers.supps
+    };
+    this.Jackpot = _jackpot;
+}
+
+/**
+ * Create a Powerball result object 
+ * @param {Object} [_date] Custom date object comprised of strings: Day spelt; Day number; Month spelt; Year number
+ * @param {Object} [_dateObj] JS Date Object (for array sorting)
+ * @param {Object} [_numbers] Object with arrays of winning numbers and the powerball
+ * @param {string} [_jackpot] The result's jackpot amount in AUD as a string
+ */
+function Powerball_Result (_date, _dateObj, _numbers, _jackpot)
+{
+    this.Index = 0;
+    this.Date  = {
+        DayFull : _date.dayFull,
+        Day     : _date.day,
+        Month   : _date.month,
+        Year    : _date.year
+    };
+    this.Date_Formatted = _dateObj;
+    this.Numbers = {
+        Winning   : _numbers.winning,
+        Powerball : _numbers.powerball
     };
     this.Jackpot = _jackpot;
 }
@@ -239,17 +318,17 @@ function Lottery_Definition ()
                     return definition;
 
 
-                    // //***VANILLA JS ***/
-                    // //-Parse body for 'Ordered List' tags
-                    // let regpattern_definitions = /<ol>(.*)<\/ol>/gs;
-                    // let defintions_HTML = regpattern_definitions.exec( body )[1];
-                    // //-Get the first list element
-                    // regpattern_definitions = /<li>(.*)<\/li>/m;
-                    // let definition = regpattern_definitions.exec( defintions_HTML )[1];
-                    // //-Replace all the inner HTML tags with blank text
-                    // definition = definition.replace(/(<([^>]+)>)/gi, '');
-                    // //
-                    // return definition;
+                    //***VANILLA JS ***/
+                    //-Parse body for 'Ordered List' tags
+                    let regpattern_definitions = /<ol>(.*)<\/ol>/gs;
+                    let defintions_HTML = regpattern_definitions.exec( body )[1];
+                    //-Get the first list element
+                    regpattern_definitions = /<li>(.*)<\/li>/m;
+                    let definition = regpattern_definitions.exec( defintions_HTML )[1];
+                    //-Replace all the inner HTML tags with blank text
+                    definition = definition.replace(/(<([^>]+)>)/gi, '');
+                    //
+                    return definition;
                 });
         });
 }
