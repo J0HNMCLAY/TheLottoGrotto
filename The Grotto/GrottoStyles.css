@@ -1,0 +1,98 @@
+
+:root{
+    --ballSizeLarge: 50px;
+    --ballSizeMedium: 35px;
+    --ballSizeSmall: 25px;
+    
+    --mainColor : #007bff;
+    --secondaryColor : #6c757d;
+    --bonusColor: #ffc107;
+
+    --largeBallsMargin: 10px;
+    --smallBallsMargin: 3px;
+}
+
+/* TESTING */
+.TABLEROW {
+  border: 1px solid grey;
+}
+
+/*Override Bootstrap's .table td padding for small ball tables*/
+.ball-small-table td {
+    padding: 0px;
+    border: 0px;
+}
+
+.lotto-ball {
+    text-align: center;
+    vertical-align: middle;
+    color: white;
+    font-weight: 700;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.ball-main-large {
+    margin: var(--largeBallsMargin);
+    height: var(--ballSizeLarge);
+    width:  var(--ballSizeLarge);
+    background-color: var(--mainColor);
+  }
+.ball-bonus-large {
+    margin: var(--largeBallsMargin);
+    height: var(--ballSizeLarge);
+    width:  var(--ballSizeLarge);
+    background-color: var(--bonusColor);
+  }
+
+.ball-main-small {
+    margin: var(--smallBallsMargin);
+    height: var(--ballSizeSmall);
+    width:  var(--ballSizeSmall);
+    background-color: var(--mainColor);
+  }
+.ball-bonus-small {
+    margin: var(--smallBallsMargin);
+    height: var(--ballSizeSmall);
+    width:  var(--ballSizeSmall);
+    background-color: var(--bonusColor);
+  }
+
+  /*Dimensional Game Elements*/
+.lotto-game-element {
+  text-align: center;
+  vertical-align: middle;
+  margin-top: var(--smallBallsMargin);
+  margin-bottom: var(--smallBallsMargin);
+}
+.lotto-game-tick {
+  width:  var(--ballSizeSmall);
+  display: inline-block;
+}
+.lotto-game-count {
+  width:  var(--ballSizeSmall);
+  display: inline-block;
+}
+.lotto-game-title {
+  margin-top: 5px;
+  font-weight: 800;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+/*Dimensional Game Parameters*/
+.gameType-ball {
+  text-align: center;
+  vertical-align: middle;
+  color: white; /*text-color*/
+  background-color: var(--secondaryColor);
+  font-weight: 700;
+  border: 0px;
+  border-radius: 50%;
+  /*  */
+  height: var(--ballSizeMedium);
+  width:  var(--ballSizeMedium);
+}
+.gameType-ball-selected {
+  background-color: var(--mainColor);
+}

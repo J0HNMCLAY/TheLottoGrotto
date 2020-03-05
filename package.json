@@ -1,0 +1,26 @@
+{
+  "name": "thelottogrotto",
+  "version": "1.0.0",
+  "description": "Who wants to be a millionaire",
+  "main": "index.js",
+  "dependencies": {
+    "angular": "^1.7.9",
+    "cheerio": "^1.0.0-rc.3",
+    "http-server": "^0.12.1",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "Hello Japzzz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/J0HNMCLAY/TheLottoGrotto.git"
+  },
+  "author": "Japzzz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/J0HNMCLAY/TheLottoGrotto/issues"
+  },
+  "homepage": "https://github.com/J0HNMCLAY/TheLottoGrotto#readme"
+}

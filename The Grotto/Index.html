@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en" ng-app='LottoGrottoApp'>
+
+    <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+            integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+        <link rel='stylesheet' href="./GrottoStyles.css">
+
+        <!-- BOOTSTRAP -->
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+        <script src="https://kit.fontawesome.com/46fc9c8bc3.js" 
+            crossorigin="anonymous"></script>
+
+        <!-- Global JS -->
+        <script src='../node_modules/angular/angular.js'></script>
+
+        <!-- My JS Scripts -->
+        <script src='./LottoGrottoApp.js'></script>
+        <script src="./Universal_Play.js"></script>
+        
+
+        <title>Lotto-Grotto</title>
+    </head>
+
+    <body ng-controller="LottoGrottoController">
+
+        <div class="container">
+            <br><br>
+
+            <h2>
+                The Lotto Grotto
+                <i class='fas fa-funnel-dollar'></i>
+            </h2>
+
+            <br><br>
+
+            <!-- NAV BAR -->
+            <div class="row">
+                <div class="col-3">
+                  <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <a class="nav-link" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">
+                        <i class="fas fa-home"></i>
+                        Home
+                    </a>
+                    <a class="nav-link active" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">
+                        <i class="fas fa-comments-dollar"></i>
+                        Multi-Dimensional Lottery
+                    </a>
+                    <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">
+                        <i class="fas fa-calculator"></i>
+                        Statistics
+                    </a>
+                    <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">
+                        <i class="fas fa-surprise"></i>
+
+                    </a>
+                  </div>
+                </div>
+
+                <!-- CONTENT -->
+                <div class="col-9">
+                  <div class="tab-content" id="v-pills-tabContent">
+                    <!-- Homepage -->
+                    <div class="tab-pane fade" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+
+                        <Homepage ng-include="homepage_template"></Homepage>
+
+                    </div>
+                    <!-- Multi-Dimensional Lottery -->
+                    <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                        
+                        <!-- <DimensionalLottery ng-include="dimensional_template"></DimensionalLottery> -->
+
+                        Multi-Dimensional Lottery!
+                        <hr>
+                        <p>{{initMsg}}</p>
+                        <br>
+
+                        <!-- ROW 1-->
+                        <div class='row'>
+                            <!-- Left Hand Side -->
+                            <div class='col-md' style='color:grey; border:2px solid grey'>
+                                <h6>Game Settings</h6>
+
+                                <form>
+                                    <!--Game type selection-->
+                                    <div class="form-group row">
+                                      <label for="staticEmail" class="col-sm-4 col-form-label">Game Type</label>
+                                      <div class="col-sm-8">
+
+                                        <button type="button" class="rounded-circle gameType-ball" data-toggle="tooltip" data-placement="top"
+                                            title={{MDL_GameType.Gold_Lotto.Name}} 
+                                            ng-class="MDL_GameType.Gold_Lotto.Class" 
+                                            ng-click='MDL_SetGameType("GL")'>
+                                            {{MDL_GameType.Gold_Lotto.Acronym}}
+                                        </button>
+                                        <button type="button" class="rounded-circle gameType-ball" data-toggle="tooltip" data-placement="top"
+                                            title={{MDL_GameType.Powerball.Name}} 
+                                            ng-class="MDL_GameType.Powerball.Class" 
+                                            ng-click='MDL_SetGameType("PB")'>
+                                            {{MDL_GameType.Powerball.Acronym}}
+                                        </button>
+                                        <button type="button" class="rounded-circle gameType-ball" data-toggle="tooltip" data-placement="top"
+                                            title={{MDL_GameType.Oz_Lotto.Name}} 
+                                            ng-class="MDL_GameType.Oz_Lotto.Class" 
+                                            ng-click='MDL_SetGameType("OZ")'>
+                                            {{MDL_GameType.Oz_Lotto.Acronym}}
+                                        </button>
+                                        
+                                      </div>
+                                    </div>
+                                    <!--No of games-->
+                                    <div class="form-group row">
+                                      <label for="inputGames" class="col-sm-4 col-form-label">No. of Games</label>
+                                      <div class="col-sm-8">
+                                        <input class="form-control" id="inputGames" placeholder="14"
+                                            ng-model='MDL_TotalGames'
+                                        >
+                                      </div>
+                                    </div>
+                                    <!-- Generate Games -->
+                                    <div class='form-group row'>
+                                        <label class='col-sm-4 col-form-label'>Numbers</label>
+                                        <div class='col-sm-8'>
+                                            <button type="button" class="btn btn-primary"
+                                                ng-click='MDL_GenerateNumbers()'
+                                            >
+                                                Generate Numbers
+                                            </button>
+                                            <button type="button" class="btn btn-danger" 
+                                                ng-click='MDL_ClearGames()'>
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <hr>
+
+                                  </form>
+
+                                
+
+                            </div>
+                            <!-- Right Hand Side -->
+                            <div class='col-md' style='border:2px solid brown'>
+                                <h6>Universe Settings</h6>
+
+                                <form>
+                                    <!--No of games-->
+                                    <div class="form-group row">
+                                        <label for="inputUniverses" class="col-sm-4 col-form-label">
+                                            Universes
+                                        </label>
+                                        <div class="col-sm-8">
+                                          <input class="form-control" id="inputUniverses" placeholder="42"
+                                              ng-model='MDL_Universes'
+                                          >
+                                        </div>
+                                      </div>
+                                    <!-- Go! -->
+                                    <div class='form-group row'>
+                                        <label class='col-sm-4 col-form-label'>Go!</label>
+                                        <div class='col-sm-8'>
+                                            <button type="button" class="btn btn-primary"
+                                                ng-click='MDL_GenerateNumbers()'
+                                            >
+                                                <i class="fas fa-globe"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-danger" 
+                                                ng-click='MDL_ClearGames()'
+                                                >
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                        
+                            </div>
+                        
+                        </div>
+                        <!--End Row 1-->
+
+                        <!-- ROW 2-->
+                        <div class='row'>
+                            <!-- Left Hand Side -->
+                            <div class='col-md' style='color:grey; border:2px solid grey'>
+                        
+                                <div ng-if='MDL_Games.length'>
+                                    <h6>Your numbers:</h6>
+                                    <table class="table grid ball-small-table">
+                                        <tbody>
+                                            <tr class="TABLEROW" ng-repeat="game in MDL_Games">
+                                                <!-- Game -->
+                                                <td class='lotto-game-element lotto-game-title'>
+                                                    <h6><span class="badge badge-secondary">
+                                                        {{("000"+$index).slice(-3)}}
+                                                    </span></h6>
+                                                </td>
+                                                <!-- Main -->
+                                                <td class='lotto-ball ball-main-small' ng-repeat="n in game.Main_Numbers">{{n}}</td>
+                                                <!-- Bonus -->
+                                                <td class='lotto-ball ball-bonus-small' ng-repeat="b in game.Supp_Numbers">{{b}}</td>
+                                                <!-- Space -->
+                                                <td></td>
+                                                <!-- Winner? -->
+                                                <td class='lotto-game-element lotto-game-tick'>
+                                                    <i ng-if='game.Won' class="fas fa-check"></i>
+                                                </td>
+                                                <td class='lotto-game-element lotto-game-count'>
+                                                    {{game.Division_1_Wins}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                
+                                </div>
+
+                            </div>
+
+                            <!-- Right Hand Side -->
+                            <div class='col-md' style='border:2px solid brown'>
+                                
+                                <h6>Your Statistics:</h6>
+
+                            </div>
+                        
+                        </div> <!--End Row 2-->
+
+                    </div>
+                    <!-- Statistics -->
+                    <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">...</div>
+                    <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">...</div>
+                  </div>
+                </div>
+              </div>
+
+
+
+
+        </div>
+
+    </body>
+</html>

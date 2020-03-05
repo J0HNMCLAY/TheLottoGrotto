@@ -11,7 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\Results_Scraper.js"
+            "program": "${workspaceFolder}\\The Grotto\\Universal_Play.js"
         }
     ]
 }
