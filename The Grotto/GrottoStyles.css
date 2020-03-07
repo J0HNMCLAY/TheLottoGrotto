@@ -14,7 +14,7 @@
 
 /* TESTING */
 .TABLEROW {
-  border: 1px solid grey;
+  /* border: 1px solid grey; */
 }
 
 /*Override Bootstrap's .table td padding for small ball tables*/

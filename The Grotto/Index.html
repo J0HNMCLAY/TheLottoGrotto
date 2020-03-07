@@ -31,7 +31,6 @@
 
         <!-- My JS Scripts -->
         <script src='./LottoGrottoApp.js'></script>
-        <script src="./Universal_Play.js"></script>
         
 
         <title>Lotto-Grotto</title>
@@ -88,13 +87,11 @@
 
                         Multi-Dimensional Lottery!
                         <hr>
-                        <p>{{initMsg}}</p>
-                        <br>
 
                         <!-- ROW 1-->
                         <div class='row'>
-                            <!-- Left Hand Side -->
-                            <div class='col-md' style='color:grey; border:2px solid grey'>
+                            <!-- Left Hand Side::TICKET SETTINGS -->
+                            <div class='col-md'>
                                 <h6>Game Settings</h6>
 
                                 <form>
@@ -103,20 +100,21 @@
                                       <label for="staticEmail" class="col-sm-4 col-form-label">Game Type</label>
                                       <div class="col-sm-8">
 
-                                        <button type="button" class="rounded-circle gameType-ball" data-toggle="tooltip" data-placement="top"
-                                            title={{MDL_GameType.Gold_Lotto.Name}} 
+                                        <button type="button" class="rounded-circle gameType-ball" 
+                                            data-toggle="tooltip" data-placement="top" id='Gold_Lotto_Select'
+                                            data-title={{MDL_GameType.Gold_Lotto.Name}} 
                                             ng-class="MDL_GameType.Gold_Lotto.Class" 
                                             ng-click='MDL_SetGameType("GL")'>
                                             {{MDL_GameType.Gold_Lotto.Acronym}}
                                         </button>
                                         <button type="button" class="rounded-circle gameType-ball" data-toggle="tooltip" data-placement="top"
-                                            title={{MDL_GameType.Powerball.Name}} 
+                                            data-title={{MDL_GameType.Powerball.Name}} 
                                             ng-class="MDL_GameType.Powerball.Class" 
                                             ng-click='MDL_SetGameType("PB")'>
                                             {{MDL_GameType.Powerball.Acronym}}
                                         </button>
                                         <button type="button" class="rounded-circle gameType-ball" data-toggle="tooltip" data-placement="top"
-                                            title={{MDL_GameType.Oz_Lotto.Name}} 
+                                            data-title={{MDL_GameType.Oz_Lotto.Name}} 
                                             ng-class="MDL_GameType.Oz_Lotto.Class" 
                                             ng-click='MDL_SetGameType("OZ")'>
                                             {{MDL_GameType.Oz_Lotto.Acronym}}
@@ -126,12 +124,18 @@
                                     </div>
                                     <!--No of games-->
                                     <div class="form-group row">
-                                      <label for="inputGames" class="col-sm-4 col-form-label">No. of Games</label>
-                                      <div class="col-sm-8">
-                                        <input class="form-control" id="inputGames" placeholder="14"
-                                            ng-model='MDL_TotalGames'
-                                        >
-                                      </div>
+                                        <label for="inputGames" class='col-sm-4 col-form-label' >
+                                            No. of Games
+                                        </label>
+                                        <div class="col-sm-3">
+                                            <input class="form-control" id="inputGames"
+                                                ng-model='MDL_TotalGames'
+                                            >
+                                        </div>
+                                        <div class="col-sm-3 col-form-label">
+                                          {{MDL_GamePrice | currency}}
+                                        </div>
+                                      
                                     </div>
                                     <!-- Generate Games -->
                                     <div class='form-group row'>
@@ -140,7 +144,7 @@
                                             <button type="button" class="btn btn-primary"
                                                 ng-click='MDL_GenerateNumbers()'
                                             >
-                                                Generate Numbers
+                                                Generate Ticket
                                             </button>
                                             <button type="button" class="btn btn-danger" 
                                                 ng-click='MDL_ClearGames()'>
@@ -156,18 +160,29 @@
                                 
 
                             </div>
-                            <!-- Right Hand Side -->
-                            <div class='col-md' style='border:2px solid brown'>
+                            <!-- Right Hand Side::MULTI_DIMENSIONAL LOTTERY SETTINGS  -->
+                            <div class='col-md'>
                                 <h6>Universe Settings</h6>
 
                                 <form>
                                     <!--No of games-->
                                     <div class="form-group row">
                                         <label for="inputUniverses" class="col-sm-4 col-form-label">
-                                            Universes
+                                            00000001
                                         </label>
                                         <div class="col-sm-8">
-                                          <input class="form-control" id="inputUniverses" placeholder="42"
+                                            <i class="fas fa-radiation"></i>
+                                            <i class="fas fa-radiation"></i>
+                                            <i class="fas fa-radiation"></i>
+                                        </div>
+                                    </div>
+                                    <!--No of games-->
+                                    <div class="form-group row">
+                                        <label for="inputUniverses" class="col-sm-4 col-form-label">
+                                            Universes
+                                        </label>
+                                        <div class="col-sm-4">
+                                          <input class="form-control" id="inputUniverses"
                                               ng-model='MDL_Universes'
                                           >
                                         </div>
@@ -177,12 +192,22 @@
                                         <label class='col-sm-4 col-form-label'>Go!</label>
                                         <div class='col-sm-8'>
                                             <button type="button" class="btn btn-primary"
-                                                ng-click='MDL_GenerateNumbers()'
+                                                ng-disable='MDL_Playing=="Loading"'
+                                                ng-click='Setup_MDL()'
                                             >
-                                                <i class="fas fa-globe"></i>
+                                                <!-- <i class="fas fa-power-off"></i> -->
+                                                PL
+                                                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"
+                                                    ng-if='MDL_Playing=="Loading"'
+                                                ></span>
+                                                <i class="fas fa-broadcast-tower"
+                                                ng-if='MDL_Playing!="Loading"'
+                                                ></i>
+                                                AY
+                                                <!-- <i class="fas fa-globe"></i> -->
                                             </button>
                                             <button type="button" class="btn btn-danger" 
-                                                ng-click='MDL_ClearGames()'
+                                                ng-click='MDL_ClearUniversalLottery()'
                                                 >
                                                 <i class="fas fa-times"></i>
                                             </button>
@@ -190,15 +215,17 @@
                                     </div>
                                 </form>
                         
+                                <hr>
+
                             </div>
                         
                         </div>
                         <!--End Row 1-->
 
-                        <!-- ROW 2-->
+                        <!-- ROW 2::GENERATED LOTTO TICKET -->
                         <div class='row'>
                             <!-- Left Hand Side -->
-                            <div class='col-md' style='color:grey; border:2px solid grey'>
+                            <div class='col-md'>
                         
                                 <div ng-if='MDL_Games.length'>
                                     <h6>Your numbers:</h6>
@@ -232,13 +259,59 @@
 
                             </div>
 
-                            <!-- Right Hand Side -->
-                            <div class='col-md' style='border:2px solid brown'>
+                            <!-- Right Hand Side::TABLE OF MULTI-DIMENSIONAL LOTTERY GAMES -->
+                            <div class='col-md'>
                                 
+                                <div ng-show='MDL_Playing=="Loaded"'>
                                 <h6>Your Statistics:</h6>
+                                <table class="table grid ball-small-table">
+                                    <tbody>
+                                        <tr class="TABLEROW" ng-repeat='universe in MDL_Stats'>
+                                            <!-- Dimensional Games -->
+                                            <td>
+                                                <button class="btn btn-light btn-block" type="button" 
+                                                    data-toggle="collapse" data-target="#collapseExample{{$index}}"
+                                                    aria-expanded="false" aria-controls="collapseExample">
+                                                    <div class='float-left'>
+                                                        
+                                                        <i ng-if='!universe.StatsActive' class="fas fa-chevron-circle-right"></i>
+                                                        <i ng-if='universe.StatsActive' class="fas fa-caret-square-down"></i>
+                                                        <i class="fas fa-globe"></i>
+                                                        <b>#{{$index}}</b> | {{universe.Msg}}
+                                                    </div>
+                                                </button>
+                                                <div class="collapse" id="collapseExample{{$index}}">
 
+                                                    <!-- Winning Stats -->
+                                                    <div class="card card-body">
+                                                        <ul class="list-group list-group-flush">
+                                                            <li ng-if='universe.Won' class="list-group-item">
+                                                                <b>Winning No: </b> {{universe.WinningNumbers}} | 
+                                                                <b>{{universe.GameIndex}}</b>
+                                                            </li>
+                                                            <li class="list-group-item">
+                                                                <b>Years Played: </b>{{universe.Years}}
+                                                            </li>
+                                                            <li class="list-group-item">
+                                                                <b>Weeks Played: </b>{{universe.Weeks}}
+                                                            </li>
+                                                            <li class="list-group-item">
+                                                                <b>Money Spent: </b>{{universe.Spent | currency}}
+                                                            </li>
+                                                            <li class="list-group-item">
+                                                                <b>Money Won: </b>{{universe.Dividend | currency}}
+                                                            </li>
+                                                          </ul>
+                                                    </div>
+
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </div> <!-- ng-if wrap end-->
+                            
                             </div>
-                        
                         </div> <!--End Row 2-->
 
                     </div>
