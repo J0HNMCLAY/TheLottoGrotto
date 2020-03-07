@@ -1,7 +1,7 @@
 //import{ Lotto_Game, Setup_Game, Init_UP } from "./Universal_Play.js";
 
 //-App module
-var LottoGrottoApp = angular.module('LottoGrottoApp', []);
+var LottoGrottoApp = angular.module('LottoGrottoApp', ['ui.bootstrap']);
 
 //-Controller
 LottoGrottoApp.controller('LottoGrottoController',
@@ -23,6 +23,7 @@ LottoGrottoApp.controller('LottoGrottoController',
     $s.MDL_Universes  = 2;
     $s.MDL_Playing    = 'No';
     $s.MDL_Stats      = [];
+    $s.Session_Stats  = [];
 
 
     /*----------------------------------------------------------------/
@@ -101,9 +102,15 @@ LottoGrottoApp.controller('LottoGrottoController',
         {
             let Universe_Results = MDL_Process_Universe( Uvars );
             $s.MDL_Stats.push( Universe_Results );
+
+            //-Update individual game wins on object
+            if( Universe_Results.Won ) {
+                $s.MDL_Games[ Universe_Results.GameIndex ].Won=true;
+                $s.MDL_Games[ Universe_Results.GameIndex ].Division_1_Wins++;
+            }
         }
 
-        //-Show
+        //-Show list of MDL Results
         $s.MDL_Playing='Loaded';
     }
     //-
@@ -337,6 +344,15 @@ function MDL_Process_Universe (Uvars)
     }
 
     return Universe;
+}
+
+/**
+ * Define and return dividends
+ */
+function MDL_Dividends (gameType) {
+
+
+
 }
 
 

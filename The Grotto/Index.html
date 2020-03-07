@@ -27,7 +27,9 @@
             crossorigin="anonymous"></script>
 
         <!-- Global JS -->
+        
         <script src='../node_modules/angular/angular.js'></script>
+        <script src='../node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js'></script>
 
         <!-- My JS Scripts -->
         <script src='./LottoGrottoApp.js'></script>
@@ -162,7 +164,7 @@
                             </div>
                             <!-- Right Hand Side::MULTI_DIMENSIONAL LOTTERY SETTINGS  -->
                             <div class='col-md'>
-                                <h6>Universe Settings</h6>
+                                <h6 uib-tooltip="Test">Universe Settings</h6>
 
                                 <form>
                                     <!--No of games-->
@@ -264,14 +266,18 @@
                                 
                                 <div ng-show='MDL_Playing=="Loaded"'>
                                 <h6>Your Statistics:</h6>
+                                    <!-- Session Statistics -->
+
+
+
                                 <table class="table grid ball-small-table">
                                     <tbody>
                                         <tr class="TABLEROW" ng-repeat='universe in MDL_Stats'>
                                             <!-- Dimensional Games -->
                                             <td>
                                                 <button class="btn btn-light btn-block" type="button" 
-                                                    data-toggle="collapse" data-target="#collapseExample{{$index}}"
-                                                    aria-expanded="false" aria-controls="collapseExample">
+                                                    data-toggle="collapse" data-target="#MDL_statsCard{{$index}}"
+                                                    aria-expanded="false" aria-controls="MDL_statsCard">
                                                     <div class='float-left'>
                                                         
                                                         <i ng-if='!universe.StatsActive' class="fas fa-chevron-circle-right"></i>
@@ -280,9 +286,9 @@
                                                         <b>#{{$index}}</b> | {{universe.Msg}}
                                                     </div>
                                                 </button>
-                                                <div class="collapse" id="collapseExample{{$index}}">
-
-                                                    <!-- Winning Stats -->
+                                                <!-- Stats card -->
+                                                <div class="collapse" id="MDL_statsCard{{$index}}">
+                                                    
                                                     <div class="card card-body">
                                                         <ul class="list-group list-group-flush">
                                                             <li ng-if='universe.Won' class="list-group-item">
