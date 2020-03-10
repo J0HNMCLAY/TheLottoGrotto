@@ -27,9 +27,7 @@
             crossorigin="anonymous"></script>
 
         <!-- Global JS -->
-        
         <script src='../node_modules/angular/angular.js'></script>
-        <script src='../node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js'></script>
 
         <!-- My JS Scripts -->
         <script src='./LottoGrottoApp.js'></script>
@@ -58,13 +56,21 @@
                         <i class="fas fa-home"></i>
                         Home
                     </a>
-                    <a class="nav-link active" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">
+                    <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">
                         <i class="fas fa-comments-dollar"></i>
                         Multi-Dimensional Lottery
                     </a>
-                    <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">
+                    <a class="nav-link active" id="v-pills-messages-tab" data-toggle="pill" 
+                        href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false"
+                        ng-click='Acknowledge_SessionUpdate()'
+                    >
                         <i class="fas fa-calculator"></i>
                         Statistics
+                        <i  ng-show='Session_Stats.Updated'
+                        class="fas fa-exclamation-circle">
+
+                        </i>
+
                     </a>
                     <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">
                         <i class="fas fa-surprise"></i>
@@ -76,6 +82,8 @@
                 <!-- CONTENT -->
                 <div class="col-9">
                   <div class="tab-content" id="v-pills-tabContent">
+
+
                     <!-- Homepage -->
                     <div class="tab-pane fade" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
 
@@ -83,7 +91,7 @@
 
                     </div>
                     <!-- Multi-Dimensional Lottery -->
-                    <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                    <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
                         
                         <!-- <DimensionalLottery ng-include="dimensional_template"></DimensionalLottery> -->
 
@@ -164,31 +172,39 @@
                             </div>
                             <!-- Right Hand Side::MULTI_DIMENSIONAL LOTTERY SETTINGS  -->
                             <div class='col-md'>
-                                <h6 uib-tooltip="Test">Universe Settings</h6>
+                                <h6>Universe Settings</h6>
+
+                                <!-- <GameSelect ng-include='gameSelect_template'></GameSelect> -->
 
                                 <form>
-                                    <!--No of games-->
-                                    <div class="form-group row">
-                                        <label for="inputUniverses" class="col-sm-4 col-form-label">
-                                            00000001
-                                        </label>
-                                        <div class="col-sm-8">
-                                            <i class="fas fa-radiation"></i>
-                                            <i class="fas fa-radiation"></i>
-                                            <i class="fas fa-radiation"></i>
-                                        </div>
-                                    </div>
+
                                     <!--No of games-->
                                     <div class="form-group row">
                                         <label for="inputUniverses" class="col-sm-4 col-form-label">
                                             Universes
                                         </label>
                                         <div class="col-sm-4">
-                                          <input class="form-control" id="inputUniverses"
-                                              ng-model='MDL_Universes'
-                                          >
+                                            <input class="form-control" id="inputUniverses" 
+                                            ng-model='MDL_Universes'>
                                         </div>
-                                      </div>
+                                    </div>
+                                    <!--No of games-->
+                                    <div class="form-group row">
+                                        <label for="inputUniverses" class="col-sm-4 col-form-label"
+                                        >
+                                            Years per. <i class="fas fa-globe"></i>
+                                        </label>
+                                        <div class="col-sm-4">
+                                            <input class="form-control" max="5000" type="number" 
+                                            ng-model='MDL_UniYears'>
+                                        </div>
+
+                                        <!-- <div class="col-sm-8">
+                                            <i class="fas fa-radiation"></i>
+                                            <i class="fas fa-radiation"></i>
+                                            <i class="fas fa-radiation"></i>
+                                        </div> -->
+                                    </div>
                                     <!-- Go! -->
                                     <div class='form-group row'>
                                         <label class='col-sm-4 col-form-label'>Go!</label>
@@ -231,29 +247,81 @@
                         
                                 <div ng-if='MDL_Games.length'>
                                     <h6>Your numbers:</h6>
-                                    <table class="table grid ball-small-table">
+                                    <table class="grid ball-small-table">
                                         <tbody>
-                                            <tr class="TABLEROW" ng-repeat="game in MDL_Games">
+                                            <tr ng-repeat="game in MDL_Games">
                                                 <!-- Game -->
                                                 <td class='lotto-game-element lotto-game-title'>
-                                                    <h6><span class="badge badge-secondary">
+                                                    <!-- Title Normal -->
+                                                    <h6 ng-show='game.Main_Alert=="" && game.Supp_Alert==""'>
+                                                        <span class="badge badge-secondary">
                                                         {{("000"+$index).slice(-3)}}
+                                                        <i class="fas fa-caret-right"></i>
+                                                    </span></h6>
+
+                                                    <!-- Title Alert-->
+                                                    <h6 ng-show='game.Main_Alert!="" || game.Supp_Alert!=""'>
+                                                        <span class="badge badge-danger">
+                                                        {{("000"+$index).slice(-3)}}
+                                                        <i class="fas fa-exclamation"></i>
                                                     </span></h6>
                                                 </td>
+
                                                 <!-- Main -->
-                                                <td class='lotto-ball ball-main-small' ng-repeat="n in game.Main_Numbers">{{n}}</td>
-                                                <!-- Bonus -->
-                                                <td class='lotto-ball ball-bonus-small' ng-repeat="b in game.Supp_Numbers">{{b}}</td>
+                                                <td ng-repeat="n in game.Main_Numbers track by $index"
+                                                    ng-click='Edit_Ball($parent.$index, $index, "main")'
+                                                >
+                                                    <!--Not selected-->
+                                                    <div class='lotto-ball ball-main-small' 
+                                                        ng-show="!MDL_Games[$parent.$index].Main_Selected[$index]"
+                                                    >
+                                                        {{n}}
+                                                    </div>
+
+                                                    <!--Selected-->
+                                                    <div class='lotto-ball ball-main-small ball-small-selected' 
+                                                        ng-show="MDL_Games[$parent.$index].Main_Selected[$index]"
+                                                    >
+                                                        <input class='ball-small-selected-input' maxlength="2"
+                                                            id='MainBall_{{$parent.$index}}_{{$index}}'
+                                                        >
+                                                    </div>
+                                                
+                                                </td>
+
+                                                <!-- Bonus/ Supplementary -->
+                                                <td ng-repeat="s in game.Supp_Numbers track by $index"
+                                                ng-click='Edit_Ball($parent.$index, $index, "supp")'
+                                            >
+                                                <!--Not selected-->
+                                                <div class='lotto-ball ball-bonus-small' 
+                                                    ng-show="!MDL_Games[$parent.$index].Supp_Selected[$index]"
+                                                >
+                                                    {{s}}
+                                                </div>
+
+                                                <!--Selected-->
+                                                <div class='lotto-ball ball-bonus-small ball-small-selected' 
+                                                    ng-show="MDL_Games[$parent.$index].Supp_Selected[$index]"
+                                                >
+                                                    <input class='ball-small-selected-input' maxlength="2"
+                                                        id='SuppBall_{{$parent.$index}}_{{$index}}'
+                                                    >
+                                                </div>
+                                            
+                                            </td>
+
                                                 <!-- Space -->
-                                                <td></td>
+                                                <td class='lotto-game-element'></td>
                                                 <!-- Winner? -->
                                                 <td class='lotto-game-element lotto-game-tick'>
                                                     <i ng-if='game.Won' class="fas fa-check"></i>
                                                 </td>
-                                                <td class='lotto-game-element lotto-game-count'>
+                                                <td ng-if='game.Won' class='lotto-game-element lotto-game-count'>
                                                     {{game.Division_1_Wins}}
                                                 </td>
                                             </tr>
+
                                         </tbody>
                                     </table>
                                 
@@ -269,12 +337,11 @@
                                     <!-- Session Statistics -->
 
 
-
                                 <table class="table grid ball-small-table">
                                     <tbody>
-                                        <tr class="TABLEROW" ng-repeat='universe in MDL_Stats'>
+                                        <tr class="universe-result" ng-repeat='universe in MDL_Stats'>
                                             <!-- Dimensional Games -->
-                                            <td>
+                                            <td class="universe-result">
                                                 <button class="btn btn-light btn-block" type="button" 
                                                     data-toggle="collapse" data-target="#MDL_statsCard{{$index}}"
                                                     aria-expanded="false" aria-controls="MDL_statsCard">
@@ -299,7 +366,7 @@
                                                                 <b>Years Played: </b>{{universe.Years}}
                                                             </li>
                                                             <li class="list-group-item">
-                                                                <b>Weeks Played: </b>{{universe.Weeks}}
+                                                                <b>Weeks Played: </b>{{universe.WeeksRaw | number}}
                                                             </li>
                                                             <li class="list-group-item">
                                                                 <b>Money Spent: </b>{{universe.Spent | currency}}
@@ -322,7 +389,15 @@
 
                     </div>
                     <!-- Statistics -->
-                    <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">...</div>
+                    <div class="tab-pane fade show active" id="v-pills-messages" 
+                        role="tabpanel" aria-labelledby="v-pills-messages-tab"
+                    >
+
+                        <SessionStatistics ng-include='statistics_template'></SessionStatistics>
+
+
+
+                    </div>
                     <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">...</div>
                   </div>
                 </div>

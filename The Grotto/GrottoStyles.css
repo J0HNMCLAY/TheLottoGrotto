@@ -3,6 +3,7 @@
     --ballSizeLarge: 50px;
     --ballSizeMedium: 35px;
     --ballSizeSmall: 25px;
+    --ballSizeSmallSelected:20px;
     
     --mainColor : #007bff;
     --secondaryColor : #6c757d;
@@ -18,11 +19,32 @@
 }
 
 /*Override Bootstrap's .table td padding for small ball tables*/
-.ball-small-table td {
+.ball-small-table .lotto-ball, 
+.ball-small-table .lotto-game-element,
+.ball-small-table .universe-result {
     padding: 0px;
     border: 0px;
 }
+/*override Bootstrap for selected balls*/
+.ball-small-table .ball-small-selected {
+  padding: 0px;
+  border: 2.5px solid;
+  box-sizing: content-box;
+  height: var(--ballSizeSmallSelected);
+  width: var(--ballSizeSmallSelected);
+  /* dragon involve pole lend crawl chest lemon fold illness shop heavy genius */
+}
 
+/*Override inputs*/
+.gameSelect-input {
+  padding : 0px;
+}
+.gameSelect-table td {
+  padding: 0.2px;
+  border: 0px;
+}
+
+/*Base class for lotto balls*/
 .lotto-ball {
     text-align: center;
     vertical-align: middle;
@@ -58,7 +80,36 @@
     background-color: var(--bonusColor);
   }
 
-  /*Dimensional Game Elements*/
+  /*Ball selected for custom input*/
+.ball-small-selected {
+  text-align: center;
+  font-weight: 700;
+  border-radius: 50%;
+  border-color: var(--secondaryColor);
+
+  vertical-align: middle;
+  text-align: center;
+  display: inline-block;
+  /**/
+  color: var(--secondaryColor);
+  background-color: white;
+}
+.ball-small-selected-input {
+  padding: 0px;
+  border: 0px;
+  font-weight: 500;
+  border-radius: 50%;
+  outline-width: 0px;
+  height: var(--ballSizeSmallSelected);
+  width: var(--ballSizeSmallSelected);;
+  text-align: center;
+  /**/
+  color: var(--secondaryColor);
+  background-color: transparent;
+  vertical-align: top;
+}
+
+  /*Dimensional Lotto-Ticket Elements*/
 .lotto-game-element {
   text-align: center;
   vertical-align: middle;
@@ -71,6 +122,7 @@
 }
 .lotto-game-count {
   width:  var(--ballSizeSmall);
+  font-weight: 500;
   display: inline-block;
 }
 .lotto-game-title {
@@ -95,4 +147,16 @@
 }
 .gameType-ball-selected {
   background-color: var(--mainColor);
+}
+
+/*Universal results*/
+.universe-result {
+  /***class defined soley for the purpose of overriding 
+  bootstrap's default CSS*/ 
+  font-variant-ligatures: normal; /*<-- any ineffectual property will do */
+}
+
+/***--------SESSION STATISTICS-----------***/
+.headerButton {
+  vertical-align: bottom;
 }

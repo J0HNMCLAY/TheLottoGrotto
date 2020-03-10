@@ -1,0 +1,119 @@
+<div>
+    <ul>
+        <table class="table table-sm">
+            <thead class="thead-light">
+              <tr>
+                <th colspan="2">
+                    <div>
+                        <a href="#" class="btn btn-light disabled" tabindex="-1" role="button" aria-disabled="true">
+                            <i class="fas fa-chart-bar"></i>
+                            <h6>Session Statistics</h6>
+                        </a>
+                
+                        <!-- <h6>Session Statistics</h6> -->
+                        <!-- Session Statistics -->
+                
+                        <button type="button" class="btn btn-danger headerButton"
+                          ng-click='Erase_SessionData()'
+                        >
+                            <i class="fas fa-trash-alt"></i>
+                
+                        </button>
+                        <button type="button" class="btn btn-primary headerButton">
+                            <i class="fas fa-save"></i>
+                        </button>
+                    </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Session Start:</td>
+                <td>{{Session_Stats.Start}}</td>
+              </tr>
+              <tr>
+                <td>Games Played:</td>
+                <td>{{Session_Stats.Games | number}}</td>
+              </tr>
+              <tr>
+                <td>Games Won:</td>
+                <td>{{Session_Stats.Won | number}}</td>
+              </tr>
+              <tr>
+                <td>Years Played:</td>
+                <td>{{Session_Stats.Years | number}}</td>
+              </tr>
+              <tr>
+                <td>Universes Entered:</td>
+                <td>{{Session_Stats.Universes | number}}</td>
+              </tr>
+              <tr>
+                <td>Total Spent:</td>
+                <td>{{Session_Stats.Spent | currency}}</td>
+              </tr>
+              <tr>
+                <td>Total Won:</td>
+                <td>{{Session_Stats.Dividends | currency}}</td>
+              </tr>
+              <tr>
+                <td>Total Lost:</td>
+                <td>{{Session_Stats.Dividends - Session_Stats.Spent | currency}}</td>
+              </tr>
+
+            </tbody>
+          </table>
+
+        <div ng-repeat='win in Session_Stats.Winners track by win.WinNo'>
+            <button class="btn btn-light btn-block" type="button" 
+            aria-expanded="false" aria-controls="collapseExample"
+                data-toggle="collapse" data-target="#win_{{$index}}">
+                <i class="fas fa-dollar-sign"></i>
+                #{{win.WinNo}} Win Details -> {{win.GameType}} : <b>{{win.WinningNo}}</b>
+                <i class="fas fa-angle-down"></i>
+            </button>
+            <div class="collapse" id="win_{{$index}}">
+                <div class="card card-body">
+
+                    <table class="table table-sm">
+                        <tbody>
+                          <tr>
+                            <td>Dividend:</td>
+                            <td>{{win.Dividend | currency}}</td>
+                          </tr>
+                          <tr>
+                            <td>Universe Spend:</td>
+                            <td>{{win.GameSpend | currency}}</td>
+                          </tr>
+                          <tr>
+                            <td>Universe Time spent playing:</td>
+                            <td><i>Years: </i>{{win.YearsPlayed | number}} <i>& Weeks: </i>{{win.WeeksPlayed | number}}</td>
+                          </tr>
+                          <tr>
+                            <td>Total Spend up to this Win:</td>
+                            <td>{{win.TotalSpent | currency}}</td>
+                          </tr>
+                          <tr>
+                            <td>Total Years Passed until this Win:</td>
+                            <td>{{win.YearsPassed | number}}</td>
+                          </tr>
+                          <tr>
+                            <td>Total Weeks Passed until this Win:</td>
+                            <td>{{win.WeeksPassed | number}}</td>
+                          </tr>
+                          <tr>
+                            <td>Winning Numbers:</td>
+                            <td>{{win.WinningNo}}</td>
+                          </tr>
+            
+                        </tbody>
+                      </table>
+
+
+                </div>
+            </div>
+
+        </div>
+
+    </ul>
+</div>
+
