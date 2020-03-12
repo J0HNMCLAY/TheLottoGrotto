@@ -130,7 +130,7 @@ LottoGrottoApp.controller('LottoGrottoController',
         let gamesByPrice = Math.floor( 1000000 / ($s.MDL_GamePrice * 52) );
             //$l(`Games to be played with $1,000,000::${gamesByPrice}`);
 
-        $l(`Total Games::${$s.MDL_UniYears}`);
+        console.time('MDL');
 
         //-Variables for MDL function
         let Uvars = {
@@ -154,6 +154,8 @@ LottoGrottoApp.controller('LottoGrottoController',
 
         //-Show list of MDL Results
         $s.MDL_Playing='Loaded';
+
+        console.timeEnd('MDL');
 
         $s.Update_SessionData();
     }
@@ -323,7 +325,7 @@ LottoGrottoApp.controller('LottoGrottoController',
 
         //***TEST***//
         $s.MDL_TotalGames = 50;
-        $s.MDL_Universes  = 25;
+        $s.MDL_Universes  = 10;
         $s.MDL_GenerateNumbers();
         //$s.MDL_Play_Universal_Lottery();
 });
