@@ -15,21 +15,39 @@
           
     </p>
     <hr class="my-4">
-    <h6>This moment's lucky numbers:</h6>
-    <table class="table grid">
-        <tbody>
-            <tr>
-                <td class='lotto-ball ball-main-large'>5</td>
-                <td class='lotto-ball ball-main-large'>5</td>
-                <td class='lotto-ball ball-main-large'>5</td>
-                <td class='lotto-ball ball-main-large'>5</td>
-                <td class='lotto-ball ball-main-large'>5</td>
-                <td class='lotto-ball ball-main-large'>5</td>
-                <!-- Bonus -->
-                <td class='lotto-ball ball-bonus-large'>5</td>
-                <td class='lotto-ball ball-bonus-large'>5</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="card">
+        <div class="card-header">
+          <h6>Your lucky numbers</h6>
+        </div>
+        <div class="card-body" ng-repeat='(key, value) in Lucky_Numbers'>
+          <h5 class="card-title">{{key}}</h5>
+          <p class="card-text">
+            <table class="table grid">
+                <tbody>
+                    <tr>
+                        <td class='lotto-ball ball-main-large'
+                            ng-repeat='n in value.Main_Numbers'
+                            ng-repeat='s in value.Supp_Numbers'
+                            ng-class='{"gold-lotto-main" : key=="Gold Lotto", "powerball-main" : key=="Powerball",
+                                        "oz-lotto-main" : key=="Oz Lotto", "set-for-life-main" : key=="Set for Life"}'
+                        >
+                        {{n}}
+                        </td>
+                        <!-- Bonus -->
+                        <td class='lotto-ball ball-bonus-large'
+                            ng-repeat='s in value.Supp_Numbers'
+                            ng-class='{"gold-lotto-bonus" : key=="Gold Lotto", "powerball-bonus" : key=="Powerball",
+                                        "oz-lotto-bonus" : key=="Oz Lotto", "set-for-life-bonus" : key=="Set for Life"}'
+                        >
+                        {{s}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+          </p>
+        </div>
+      </div>
+
+
 
 </div>

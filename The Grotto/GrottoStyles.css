@@ -163,3 +163,32 @@
 .winButtonTitle {
   text-align: left;
 }
+
+/***-------- MY RESULTS -----------***/
+
+
+/***-------- HOMEPAGE -----------***/
+.gold-lotto-main {
+  background-color: #E63C2F;
+}
+.gold-lotto-bonus {
+  background-color: #0193D1;
+}
+.powerball-main {
+  background-color: #3653A4;
+}
+.powerball-bonus {
+  background-color: #899BAA;
+}
+.oz-lotto-main {
+  background-color: #F3CF08;
+}
+.oz-lotto-bonus {
+  background-color: #047706;
+}
+.set-for-life-main {
+  background-color: #01BCC5;
+}
+.set-for-life-bonus {
+  background-color: #F0882D;
+}

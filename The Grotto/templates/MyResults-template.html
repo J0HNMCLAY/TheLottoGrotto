@@ -1,0 +1,28 @@
+<div class="card mb-3">
+
+    <div class="card-header">
+        <button class="btn btn-primary" role="button" aria-disabled="true" ng-click='Get_MyResults()'>
+            <i class="fas fa-search-dollar"></i>
+            <h6>Check my results</h6>
+        </button>
+    </div>
+
+    <!-- <p>{{LottoResults}}</p> -->
+
+    <div class="card-body" ng-repeat='r in LottoResults'>
+
+        <h5 class="card-title">{{r['name']}}</h5>
+        <p class="card-text">
+
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item" 
+                    ng-repeat='(key, value) in r track by $index'
+                    ng-show='$index!=0'>
+                    <b>{{key}}:</b> {{r[key]}}
+                </li>
+            </ul>
+        </p>
+
+
+    </div>
+</div>

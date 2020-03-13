@@ -24,6 +24,7 @@ LottoGrottoApp.controller('LottoGrottoController',
 
     //-General setup
     Setup_App();
+    Set_Start_Page('RESULTS');
 
     //-Dimensional Lotto Setup
     $s.MDL_GameType   = new MDL_GameType();
@@ -45,6 +46,8 @@ LottoGrottoApp.controller('LottoGrottoController',
         gameIndex : 0,
         ballIndex : 0
     };
+    //-Random numbers for the homepage!
+    $s.Lucky_Numbers = Setup_Lucky_Numbers();
 
     /*----------------------------------------------------------------/
      * Watchers & Listeners *
@@ -139,6 +142,8 @@ LottoGrottoApp.controller('LottoGrottoController',
             ticketPrice : $s.MDL_GamePrice
         };
 
+        console.log(`UNI Years::${$s.MDL_UniYears}`);
+
         //-Process all Universes
         for(let u=0; u<$s.MDL_Universes; u++)
         {
@@ -217,7 +222,7 @@ LottoGrottoApp.controller('LottoGrottoController',
     {
         $s.Session_Stats = Setup_Session();
     }
-    //---------------------------------------------------------------------/////
+    //-------------------------------------------------------------------------------------/////
     //-Edit the value of an individual lotto ball
     $scope.Edit_Ball = function (gameIndex, ballIndex, ballType)
     {
@@ -316,14 +321,37 @@ LottoGrottoApp.controller('LottoGrottoController',
         $scope.$apply();
     }
 
+     
+    //-------------------------------------------------------------------------------------/////
+    //--++ MY LOTTERY RESULTS ++--//
+    $s.LottoResults = {};
 
+    $scope.Get_MyResults = function ()
+    {
+        //-Get my lotto numbers!
+        Get_My_Numbers().then( (myNumbers) => {
+
+            Get_Historical_Lotto_Results( myNumbers ).then( (results) => 
+            {
+                $s.LottoResults = results;
+                console.log("GOT MY RESULTS!!!!-->>>>>>>>>>>!");
+                $scope.$apply();
+            })
+        });
+    }
+
+    
     //-Template URLs
     $scope.homepage_template = './templates/Homepage-template.html';
     $scope.dimensional_template = './templates/DimensionalLottery-template.html';
     $scope.statistics_template = './templates/Statistics-template.html';
+    $scope.myResults_template  = './templates/MyResults-template.html';
 
 
         //***TEST***//
+        //console.log( Deep_Comparison() );
+
+
         $s.MDL_TotalGames = 50;
         $s.MDL_Universes  = 10;
         $s.MDL_GenerateNumbers();
@@ -368,6 +396,280 @@ function Setup_Session ()
     return Session;
 }
 
+/**
+ * Setup 'lucky numbers' for the homepage
+ * *These are just numbers generated at random when the site is loaded!
+ */
+function Setup_Lucky_Numbers ()
+{
+    let lucky_numbers = {
+        "Gold Lotto"   : MDL_Setup_Game('GL'),
+        "Powerball"    : MDL_Setup_Game('PB'),
+        "Oz Lotto"     : MDL_Setup_Game('OZ'),
+        "Set for Life" : MDL_Setup_Game('S4L')
+    };
+    return lucky_numbers;
+}
+
+/**
+ * Set the Homepage at index.html
+ * @param {string} page Shorthand ID of the page: HOME : MDL : STATS : RESULTS
+ */
+function Set_Start_Page (page) 
+{
+    //-Set start-page for testing!
+    let pageID = '';
+    if( page=='HOME') pageID = 'home'; 
+    if( page=='MDL' ) pageID = 'profile';
+    if( page=='STATS') pageID = 'messages';
+    if( page=='RESULTS') pageID = 'settings';
+
+    //-Set
+    navBar = $(`a[href*="#v-pills-${pageID}"]`).addClass('active');
+    page   = $(`#v-pills-${pageID}`).addClass('show active');
+}
+
+/**
+ * Pull my saved lotto numbers (lucky numbers lol)
+ */
+function Get_My_Numbers ()
+{
+    return new Promise((resolve,reject) => {
+
+        let baseDir = 'http://localhost:8080/Results_Archive/';
+        let MyNumbersFile = baseDir + 'My_Numbers.json';
+
+        fetch(MyNumbersFile).then( response => 
+            {
+                //-Process response
+                response.text().then( body => {
+                    //-Resolve and send obj data back
+                    resolve( JSON.parse(body) );
+                    return;
+                });
+            });
+    });
+}
+
+/**
+ * Pulls the saved lotto-results from the server...
+ * @param {Object} [myNumbers] Object containing my lotto numbers
+ */
+function Get_Historical_Lotto_Results (myNumbers)
+{
+    return new Promise( (resolve, reject) => 
+    {
+
+        let Results = [];
+
+        let baseDir = 'http://localhost:8080/Results_Archive/';
+        let Saturday_Lotto  = 'SatLotto_Results.json';
+        let Monday_Lotto    = 'MonLotto_Results.json';
+        let Wednesday_Lotto = 'WedLotto_Results.json';
+        let Oz_Lotto     = 'OzLotto_Results.json';
+        let Powerball    = 'Powerball_Results.json';
+        let Set_For_Life = 'SetForLife_Results.json';
+
+        let fileArray = [ Saturday_Lotto, Monday_Lotto, Wednesday_Lotto, Oz_Lotto, Powerball, Set_For_Life ];
+        let gameArray = [ 'Saturday_Lotto', 'Monday_Lotto', 'Wednesday_Lotto', 'Oz_Lotto', 'Powerball', 'Set_For_Life' ];
+
+        let checkState = 'Ready';
+        let fileLoop = -1;
+
+        // THE LOOP
+        var checkLoop = setInterval( () => {
+
+            
+            if( checkState=='Ready' )
+            {
+                fileLoop++;
+                //-Check if we've reached the end of the file-array
+                if( fileLoop==fileArray.length ) { 
+                    clearInterval( checkLoop ); 
+                    resolve( Results );
+                    return; 
+                }
+
+                //-Setup vars
+                checkState='Checking';
+                let url  = baseDir + fileArray[fileLoop];
+                let game = gameArray[fileLoop];
+
+                //Get Data...
+                fetch( url ).then( response => 
+                {
+                    //-Process response
+                    response.text().then( body => 
+                        {
+                            let lottoResults = JSON.parse( body );
+
+                            Cross_Reference_Lotto_Results( myNumbers, lottoResults, game ).then( (gameResult) => 
+                            {
+                                Results.push( gameResult );
+                                checkState = 'Ready';
+                            });
+                        });
+                });
+            }
+        }, 500);
+
+    });
+}
+
+/**
+ * Cross-reference historical lotto results with our numbers!
+ */
+function Cross_Reference_Lotto_Results (myNumbers, lottoNumbers, game)
+{
+    return new Promise( (resolve,reject) => {
+
+        let resultsObject = {
+            'name' : game,
+            'Divisions' : 0,
+            'Division 1 Wins' : 0,
+            'Division 2 Wins' : 0,
+            'Division 3 Wins' : 0,
+            'Division 4 Wins' : 0,
+            'Division 5 Wins' : 0,
+            'Division 6 Wins' : 0,
+            'Division 7 Wins' : 0,
+            'Division 8 Wins' : 0,
+            'Division 9 Wins' : 0
+        };
+
+        //-Turn my numbers into a string array for comparison
+        let my_numbers = [];
+        let wins_main = [];
+        let wins_supp = [];
+
+        let winning_numbers = [];
+
+        //-Setup key to pull my Numbers
+        let gameKey = '';
+        if( game=='Saturday_Lotto' || game=='Monday_Lotto' || game=='Wednesday_Lotto' ) 
+        {
+            gameKey = 'GoldLotto';
+
+        }
+        if( game=='Oz_Lotto' ) { gameKey = 'OzLotto';  }
+        if( game=='Powerball') { gameKey = 'Powerball';  }
+        if( game=='Set_For_Life' ) { gameKey = 'SetForLife'; }
+
+
+        //-Derive lotto results
+        for(let i=0; i<lottoNumbers.length; i++)
+        {
+            wins_main = lottoNumbers[i].Numbers['Winning'];
+            wins_supp = lottoNumbers[i].Numbers['Supps'];
+
+            //-Turn my numbers into a string-array
+            for( let key in myNumbers[gameKey] )
+            {
+                my_numbers = myNumbers[gameKey][key];
+
+                let dc_Result = Deep_Comparison( my_numbers, wins_main, wins_supp );
+                let divisionWin = Check_Win_Division( game, dc_Result );
+                if( divisionWin != -1) 
+                {
+                    resultsObject['Division '+divisionWin+' Wins'] ++;
+                }
+            }
+        }
+
+        //-Push to cool object
+        let gameParsed = game.replace(/\_/g, " ");
+        resultsObject.name = gameParsed;
+
+        //-Resolve and return wins!
+        resolve( resultsObject );
+
+    });
+}
+
+/**
+ * Perform a deep comparison on lotto-games & winning numbers
+ */
+function Deep_Comparison (playedNumbers, mainNumbers, suppNumbers)
+{
+    // let playedNumbers = [2, 9, 15, 24, 31, 42];
+    // let mainNumbers   = [3, 9, 10, 24, 30, 42];
+    // let suppNumbers   = [2, 35];
+
+    let wins_main = mainNumbers.filter( (item) => { return playedNumbers.includes(item); });
+    let wins_supp = suppNumbers.filter( (item) => { return playedNumbers.includes(item); });
+
+    let result = {
+        wins_main : wins_main,
+        wins_supp : wins_supp
+    };
+
+    //console.log(`Wins: Main::${result.wins_main.length} | Supp::${result.wins_supp.length}`);
+
+    return result;
+}
+
+/**
+ * Cross reference winning numbers against each defined lottery division and return the division win
+ * ...or -1 for no win!
+ * @param {string} [game] The particular lotto game
+ * @param {Object} [winningNumbers] Object containing 2 winning number arrays: Main & Supps
+ * @returns {number} The division of the win ( -1 for no win )
+ */
+function Check_Win_Division ( game, winningNumbers )
+{
+    let Division = -1;
+
+    // Gold Lotto
+    if( game=='Saturday_Lotto' || game=='Monday_Lotto' || game=='Wednesday_Lotto' ) 
+    {
+        if( winningNumbers.wins_main.length==6 ) { Division = 1; }
+        else if( winningNumbers.wins_main.length==5 && winningNumbers.wins_supp.length==1 ) { Division = 2; }
+        else if( winningNumbers.wins_main.length==5 ) { Division = 3; }
+        else if( winningNumbers.wins_main.length==4 ) { Division = 4; }
+        else if( winningNumbers.wins_main.length==3 && winningNumbers.wins_supp.length==1 ) { Division = 5; }
+        else if( winningNumbers.wins_main.length==2 && winningNumbers.wins_supp.length==2
+             ||  winningNumbers.wins_main.length==1 && winningNumbers.wins_supp.length==2 ) { Division = 6; }
+    }
+    // Powerball
+    if( game=="Powerball" )
+    {
+        if( winningNumbers.wins_main.length==7 && winningNumbers.wins_supp.length==1 ) { Division = 1; }
+        else if( winningNumbers.wins_main.length==7 ) { Division = 2; }
+        else if( winningNumbers.wins_main.length==6 && winningNumbers.wins_supp.length==1 ) { Division = 3; }
+        else if( winningNumbers.wins_main.length==6 ) { Division = 4; }
+        else if( winningNumbers.wins_main.length==5 && winningNumbers.wins_supp.length==1 ) { Division = 5; }
+        else if( winningNumbers.wins_main.length==4 && winningNumbers.wins_supp.length==1 ) { Division = 6; }
+        else if( winningNumbers.wins_main.length==5 ) { Division = 7; }
+        else if( winningNumbers.wins_main.length==3 && winningNumbers.wins_supp.length==1 ) { Division = 8; }
+        else if( winningNumbers.wins_main.length==2 && winningNumbers.wins_supp.length==1 ) { Division = 9; }
+    }
+    // Oz Lotto
+    if( game=="Oz_Lotto" )
+    {
+        if( winningNumbers.wins_main.length==7 ) { Division = 1; }
+        else if( winningNumbers.wins_main.length==6 && winningNumbers.wins_supp.length==1 ) { Division = 2; }
+        else if( winningNumbers.wins_main.length==6 ) { Division = 3; }
+        else if( winningNumbers.wins_main.length==5 && winningNumbers.wins_supp.length==1 ) { Division = 4; }
+        else if( winningNumbers.wins_main.length==5 ) { Division = 5; }
+        else if( winningNumbers.wins_main.length==4 ) { Division = 6; }
+        else if( winningNumbers.wins_main.length==3 && winningNumbers.wins_supp.length==1 ) { Division = 7; }
+    }
+    // Set for Life
+    if( game=="Set_For_Life" )
+    {
+        if( winningNumbers.wins_main.length==8 ) { Division = 1; }
+        else if( winningNumbers.wins_main.length==7 && winningNumbers.wins_supp.length==1 ) { Division = 2; }
+        else if( winningNumbers.wins_main.length==7 ) { Division = 3; }
+        else if( winningNumbers.wins_main.length==6 && winningNumbers.wins_supp.length==1 ) { Division = 4; }
+        else if( winningNumbers.wins_main.length==6 ) { Division = 5; }
+        else if( winningNumbers.wins_main.length==5 && winningNumbers.wins_supp.length==1 ) { Division = 6; }
+        else if( winningNumbers.wins_main.length==5 ) { Division = 7; }
+        else if( winningNumbers.wins_main.length==4 && winningNumbers.wins_supp.length==1 ) { Division = 8; }
+    }
+
+
+    return Division;
+}
 
 
 /**
@@ -502,9 +804,13 @@ function MDL_Setup_Game (gameType)
         VARS.number_range = 35;
         VARS.main_numbers = 7; 
     }
-    if( gameType=="OZ" ) {
+    if( gameType=="OZ"  ) {
         VARS.total_numbers = 9;
         VARS.main_numbers = 7; 
+    }
+    if( gameType=="S4L" ) {
+        VARS.total_numbers = 10;
+        VARS.main_numbers = 8;
     }
 
     //-Create array of ballz
@@ -571,14 +877,6 @@ function MDL_GameMatch (games, game, gameType)
     return winning_index;
 }
 
-/**
- * Check a user's input for a ball value.
- * Ascertain if it's: not a number, outside the ball range etc.
- */
-function MDL_CheckBallValue (gameType)
-{
-
-}
 
 /**
  * Run a lotto game in a parallel-universe for a set no. of years
@@ -651,10 +949,10 @@ function MDL_Dividends (gameType)
 
 //#endregion
 
-//#region  Random-No generators
+//#region  Random-No generators -----------------------------------------------------/////
 
 /**
- * The generator here, uses Marsaglia's MWC (multiply with carry) algorithm.
+ * The random number generator here, uses Marsaglia's MWC (multiply with carry) algorithm.
  * @param {int/float} [_max] Maximum end of the range
  * @param {int/float} [_min] *Optional - Minimal end of the range
  * @returns {int} Returns and integer between _max & _min (1)
@@ -671,11 +969,11 @@ function MWC_Random (_max, _min)
     //-Create date-time that's converted to FileTime
     //let dt = new Date().getTime() * 1e4 + 116444736e9;
     //-Drive the seed value with a random value * currentTime
-    let dt = Math.floor(Math.random() * new Date().getTime());
+    let seed = Math.floor(Math.random() * new Date().getTime());
 
     //-Seeded values
-    m_w = (new Uint32Array([dt >> 16]))[0];
-    m_z = (new Uint32Array([dt % 4294967296]))[0];
+    m_w = (new Uint32Array([seed >> 16]))[0];
+    m_z = (new Uint32Array([seed % 4294967296]))[0];
 
     //-Generate...
     m_z = 36969 * (m_z & 65535) + (m_z >> 16);
@@ -724,7 +1022,6 @@ function JS_Rand (_max, _min)
 }
 
 //#endregion
-
 
 //#region TESTING -----------------------------------------------------/////
 function Get_Resource ()

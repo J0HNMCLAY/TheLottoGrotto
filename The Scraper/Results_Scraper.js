@@ -76,19 +76,19 @@ var All_Results = [];
 var Scrape_Results = [];
 
 // !! Global Override !!
-const EXECUTE = true; 
+const EXECUTE = false; 
 
 // ENTRY POINT
 STATE.Set('SETUP');
 
 // MAIN LOOP
-var mainLoop = setInterval( () =>{
+var mainLoop = setInterval( () => {
 
     //-Global overrride
     if( !EXECUTE ) { clearInterval(mainLoop); return; }
 
 
-
+    //-Scrape & Update
     if( STATE.Is("SETUP") )
     {
         STATE.Game_Loop++;
@@ -128,6 +128,7 @@ var mainLoop = setInterval( () =>{
     //MainLoop_Loop++;
     //if( MainLoop_Loop>=5 ) clearInterval(mainLoop);
 }, 500);
+
 
 /**
  * Setup phase :: 1
