@@ -9,16 +9,16 @@
 
     <!-- <p>{{LottoResults}}</p> -->
 
-    <div class="card-body" ng-repeat='r in LottoResults'>
+    <div class="card-body" ng-repeat='result in LottoResults'>
 
-        <h5 class="card-title">{{r['name']}}</h5>
+        <h5 class="card-title">{{result['name']}}</h5>
         <p class="card-text">
 
             <ul class="list-group list-group-flush">
                 <li class="list-group-item" 
-                    ng-repeat='(key, value) in r track by $index'
-                    ng-show='$index!=0'>
-                    <b>{{key}}:</b> {{r[key]}}
+                    ng-repeat='(key, value) in result track by $index'
+                    ng-show='$index!=0 && $index<=result["Divisions"]'>
+                    <b>{{key}}:</b> {{result[key]}}
                 </li>
             </ul>
         </p>

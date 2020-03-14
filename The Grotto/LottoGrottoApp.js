@@ -525,7 +525,6 @@ function Cross_Reference_Lotto_Results (myNumbers, lottoNumbers, game)
 
         let resultsObject = {
             'name' : game,
-            'Divisions' : 0,
             'Division 1 Wins' : 0,
             'Division 2 Wins' : 0,
             'Division 3 Wins' : 0,
@@ -534,7 +533,8 @@ function Cross_Reference_Lotto_Results (myNumbers, lottoNumbers, game)
             'Division 6 Wins' : 0,
             'Division 7 Wins' : 0,
             'Division 8 Wins' : 0,
-            'Division 9 Wins' : 0
+            'Division 9 Wins' : 0,
+            'Divisions' : 0,
         };
 
         //-Turn my numbers into a string array for comparison
@@ -549,11 +549,12 @@ function Cross_Reference_Lotto_Results (myNumbers, lottoNumbers, game)
         if( game=='Saturday_Lotto' || game=='Monday_Lotto' || game=='Wednesday_Lotto' ) 
         {
             gameKey = 'GoldLotto';
+            resultsObject.Divisions = 6;
 
         }
-        if( game=='Oz_Lotto' ) { gameKey = 'OzLotto';  }
-        if( game=='Powerball') { gameKey = 'Powerball';  }
-        if( game=='Set_For_Life' ) { gameKey = 'SetForLife'; }
+        if( game=='Oz_Lotto' ) { gameKey = 'OzLotto'; resultsObject.Divisions = 7;  }
+        if( game=='Powerball') { gameKey = 'Powerball'; resultsObject.Divisions = 9;  }
+        if( game=='Set_For_Life' ) { gameKey = 'SetForLife'; resultsObject.Divisions = 8; }
 
 
         //-Derive lotto results
@@ -979,7 +980,7 @@ function MWC_Random (_max, _min)
     m_z = 36969 * (m_z & 65535) + (m_z >> 16);
     m_w = 18000 * (m_w & 65535) + (m_w >> 16);
     //let number = (m_z << 16) + m_w;
-    let number = (new Uint32Array([(m_z << 16) + m_w]))[0]
+    let number = (new Uint32Array([(m_z << 16) + m_w]))[0];
 
     // Uniform RNG
     // The result is strictly between 0 and 1.
