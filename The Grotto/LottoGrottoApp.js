@@ -24,7 +24,7 @@ LottoGrottoApp.controller('LottoGrottoController',
 
     //-General setup
     Setup_App();
-    Set_Start_Page('RESULTS');
+    Set_Start_Page('HOME');
 
     //-Dimensional Lotto Setup
     $s.MDL_GameType   = new MDL_GameType();
@@ -352,9 +352,9 @@ LottoGrottoApp.controller('LottoGrottoController',
         //console.log( Deep_Comparison() );
 
 
-        $s.MDL_TotalGames = 50;
-        $s.MDL_Universes  = 10;
-        $s.MDL_GenerateNumbers();
+        // $s.MDL_TotalGames = 50;
+        // $s.MDL_Universes  = 10;
+        // $s.MDL_GenerateNumbers();
         //$s.MDL_Play_Universal_Lottery();
 });
 
