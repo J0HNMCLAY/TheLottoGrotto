@@ -30,21 +30,21 @@ const GAME = {
     SaturdayLotto : 
     {
         BASE_URL   : 'https://australia.national-lottery.com/saturday-lotto/results-archive-',
-        YEAR_RANGE : [1986, 2020],
+        YEAR_RANGE : [1986, 2020], //1986
         GAME_TYPE  : GAME_TYPE.Saturday_Lotto,
         FILE       : 'SatLotto_Results.json'
     },
     MondayLotto : 
     {
         BASE_URL   : 'https://australia.national-lottery.com/monday-lotto/results-archive-',
-        YEAR_RANGE : [2006, 2020],
+        YEAR_RANGE : [2006, 2020], //2006
         GAME_TYPE  : GAME_TYPE.Monday_Lotto,
         FILE       : 'MonLotto_Results.json'
     },
     WednesdayLotto : 
     {
         BASE_URL   : 'https://australia.national-lottery.com/wednesday-lotto/results-archive-',
-        YEAR_RANGE : [2006, 2020],
+        YEAR_RANGE : [2006, 2020], //2006
         GAME_TYPE  : GAME_TYPE.Wednesday_Lotto,
         FILE       : 'WedLotto_Results.json'
     },
@@ -75,8 +75,14 @@ const GAME = {
 var All_Results = [];
 var Scrape_Results = [];
 
-// !! Global Override !!
+// !-----------------|GLOBALS|-----------------------!//
+// !-- Change these, and nothing else...-------------!//
+// !-------------------------------------------------!//
+// Global Override 
 const EXECUTE = false; 
+// Get this year's results (not archival results)
+const GET_LATEST_RESULTS = true;
+// !-------------------------------------------------!//
 
 // ENTRY POINT
 STATE.Set('SETUP');
@@ -161,10 +167,20 @@ function Get_Lotto_Results_Setup() {
 
         //-Create file path for this game
         STATE.File_Path = GAME['Global'].FILE_DIRECTORY + GAME[object].FILE;
+
         //-Create URL_Range to pull results
         STATE.URL = [];
         let start = GAME[object].YEAR_RANGE[0];
         let end = GAME[object].YEAR_RANGE[1];
+
+        //-Override the URL_Range if we only want the latest updates...
+        if( GET_LATEST_RESULTS )
+        {
+            start = GAME.Global.THIS_YEAR - 1; // last year
+            end   = GAME.Global.THIS_YEAR;
+        }
+
+        //-Setup array of URLs
         for (let i = start; i <= end; i++) {
             STATE.URL.push(GAME[object].BASE_URL + i);
         }
