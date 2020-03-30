@@ -11,7 +11,8 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\The Scraper\\Results_Scraper.js"
+            //"program": "${workspaceFolder}\\The Scraper\\Results_Scraper.js"
+            "program": "${workspaceFolder}\\The Grotto\\LottoGrottoApp.js"
         }
     ]
 }

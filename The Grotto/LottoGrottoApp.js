@@ -1,18 +1,16 @@
-//import{ Lotto_Game, Setup_Game, Init_UP } from "./Universal_Play.js";
+// const CMD = require('child_process');
+
+//************************************************************************\\
+//*** Run this Terminal command to start a local HTTP server:
+// node "C:\Users\rodri\Documents\Code Projects\The Lotto Grotto\TheLottoGrotto\node_modules\http-server\bin\http-server"
+//
+// Server is accessible via. a web broswer at URL: http://localhost:8080/
+// Homepage is accessible at URL: http://localhost:8080/The%20Grotto/ 
+//
+//************************************************************************\\
 
 //-App module
 var LottoGrottoApp = angular.module('LottoGrottoApp', []);
-
-
-// LottoGrottoApp.provider('BallValue', function() {
-    
-//     //var noObj = {};
-//     let no = Math.floor(Math.random()*45);
-//     return {
-//         $get : () => { return Math.floor(Math.random()*45);; }
-//     }
-//     //randomObj.Generate = () => { return no; }
-// });
 
 //-Controller
 LottoGrottoApp.controller('LottoGrottoController',
@@ -953,37 +951,34 @@ function MDL_Dividends (gameType)
 //#region  Random-No generators -----------------------------------------------------/////
 
 /**
- * The random number generator here, uses Marsaglia's MWC (multiply with carry) algorithm.
+ * This RNG uses Marsaglia's MWC (multiply with carry) algorithm.
  * @param {int/float} [_max] Maximum end of the range
- * @param {int/float} [_min] *Optional - Minimal end of the range
- * @returns {int} Returns and integer between _max & _min (1)
+ * @param {int/float} [_min] Minimal end of the range
+ * @returns {int} Returns a random unsigned integer
  */
 function MWC_Random (_max, _min)
 {
     let max = _max + 1;
     let min = _min || 0;
 
-    //Masaglia's default values (save...)
+    //Masaglia's default values (save as tribute...)
     let m_w = 521288629;
     let m_z = 362436069;
 
-    //-Create date-time that's converted to FileTime
-    //let dt = new Date().getTime() * 1e4 + 116444736e9;
-    //-Drive the seed value with a random value * currentTime
+    //-Drive the seed value with a JS pseudo random value (LOL) * currentTime
     let seed = Math.floor(Math.random() * new Date().getTime());
 
     //-Seeded values
     m_w = (new Uint32Array([seed >> 16]))[0];
     m_z = (new Uint32Array([seed % 4294967296]))[0];
 
-    //-Generate...
+    //-Shift them bits...
     m_z = 36969 * (m_z & 65535) + (m_z >> 16);
     m_w = 18000 * (m_w & 65535) + (m_w >> 16);
-    //let number = (m_z << 16) + m_w;
+    //
     let number = (new Uint32Array([(m_z << 16) + m_w]))[0];
 
-    // Uniform RNG
-    // The result is strictly between 0 and 1.
+    // Uniform RNG algo. to strictly conform the result between 0 and 1
     number = Math.floor(((number + 1.0) * 2.328306435454494e-10) * max);
     if (number < min) number = min;
 

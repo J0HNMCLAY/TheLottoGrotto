@@ -7,6 +7,7 @@
     
     --mainColor : #007bff;
     --secondaryColor : #6c757d;
+    --lightColor : lightgray;
     --bonusColor: #ffc107;
 
     --largeBallsMargin: 10px;
@@ -16,6 +17,11 @@
 /* TESTING */
 .TABLEROW {
   /* border: 1px solid grey; */
+}
+
+/* Reload Button */
+.reload-button {
+  color: var(--lightColor);
 }
 
 /*Override Bootstrap's .table td padding for small ball tables*/
