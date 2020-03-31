@@ -22,18 +22,19 @@ LottoGrottoApp.controller('LottoGrottoController',
 
     //-General setup
     Setup_App();
-    Set_Start_Page('HOME');
+    Set_Start_Page('RESULTS');
 
     //-Dimensional Lotto Setup
     $s.MDL_GameType   = new MDL_GameType();
     $s.MDL_TotalGames = 14;
-    $s.MDL_GamePrice  = 0;
+    $s.MDL_GamePrice  = 9.1;
     $s.MDL_Games      = [];
     //
     $s.MDL_Universes  = 2;
     $s.MDL_UniYears   = 1000;
     $s.MDL_Playing    = 'No';
-    $s.MDL_Stats      = [];
+    $s.MDL_Stats      = []; // stats from the current run
+    $s.MDL_Wins       = 0;  // wins from this current run
     $s.Session_Stats  = Setup_Session();
     //
     $s.Input_Focus = {
@@ -44,6 +45,13 @@ LottoGrottoApp.controller('LottoGrottoController',
         gameIndex : 0,
         ballIndex : 0
     };
+    //
+    $s.rc = {
+        ep : '',
+        lk : true,
+        pa : '10001110001101',
+        st : 'none'
+    }
     //-Random numbers for the homepage!
     $s.Lucky_Numbers = Setup_Lucky_Numbers();
 
@@ -53,10 +61,22 @@ LottoGrottoApp.controller('LottoGrottoController',
     $scope.$watch('MDL_TotalGames', (newValue, oldValue) => {
 
         if( newValue==oldValue ) return;
-        let value = parseInt(newValue); if( isNaN(value) ) value = 0;
+        //
+        let value = parseInt(newValue); 
+        if( isNaN(value) ) value = 0;
+        if( value <=000 ) $scope.MDL_TotalGames = 000; 
         if( value > 250 ) $scope.MDL_TotalGames = 250;
         //
         $s.MDL_GamePrice = $s.MDL_GameType.GetTicketPrice( value );
+    });
+
+    $scope.$watch('rc.ep', (newValue, oldValue) => {
+        let nv = newValue;
+        let ov = oldValue;
+        if( nv==ov || !$s.rc.lk ) return;
+        //
+        if( (nv>>0).toString(2)==$s.rc.pa ) { $s.rc.lk = false; $s.rc.ep=''; }
+        else $s.rc.lk = true; 
     });
 
     //-Capture any click to disable Lotto-Ball input focus
@@ -92,12 +112,12 @@ LottoGrottoApp.controller('LottoGrottoController',
     $scope.MDL_GenerateNumbers = function ()
     {
         //-Reset
-        $scope.MDL_ClearGames()
+        $scope.MDL_ClearGames();
         //
         let gameType  = $s.MDL_GameType.Selected;
         let noOfGames = $s.MDL_TotalGames;
 
-        if( noOfGames==0 ) return;
+        if( noOfGames==0 ) $s.MDL_TotalGames = noOfGames = 1;
 
         //-Set game price (per-week)
         $s.MDL_GamePrice = $s.MDL_GameType.GetTicketPrice( noOfGames );
@@ -105,12 +125,12 @@ LottoGrottoApp.controller('LottoGrottoController',
         for(let i=0; i<noOfGames; i++)
             $s.MDL_Games.push( MDL_Setup_Game(gameType) );
 
-            console.log("Numbers GENERATED");
+            //console.log("Numbers GENERATED");
     }
     //-Clear/Reset game array
     $scope.MDL_ClearGames = function ()
     {
-        $s.MDL_Games = []; $s.MDL_GamePrice = 0;
+        $s.MDL_Games = [];
     }
     //
     //-Setup the MDL as we need some time to ensure angular refreshes!
@@ -119,6 +139,14 @@ LottoGrottoApp.controller('LottoGrottoController',
         //-Reset
         $scope.MDL_ClearUniversalLottery();
         $s.MDL_Playing = 'Loading';
+
+        //-Check pre-requisites...
+        // Setup a ticket if none has been generated!
+        if( !$s.MDL_Games.length ) 
+        {
+            $s.MDL_TotalGames = 10; 
+            $scope.MDL_GenerateNumbers();
+        }
 
         //-Create brief blocking timer for angular refresh
         let Weee = () => { $s.MDL_Play_Universal_Lottery();  }
@@ -140,7 +168,7 @@ LottoGrottoApp.controller('LottoGrottoController',
             ticketPrice : $s.MDL_GamePrice
         };
 
-        console.log(`UNI Years::${$s.MDL_UniYears}`);
+        //console.log(`UNI Years::${$s.MDL_UniYears}`);
 
         //-Process all Universes
         for(let u=0; u<$s.MDL_Universes; u++)
@@ -150,6 +178,7 @@ LottoGrottoApp.controller('LottoGrottoController',
 
             //-Update individual game wins on object
             if( Universe_Results.Won ) {
+                $s.MDL_Wins++;
                 $s.MDL_Games[ Universe_Results.GameIndex ].Won=true;
                 $s.MDL_Games[ Universe_Results.GameIndex ].Division_1_Wins++;
             }
@@ -160,12 +189,14 @@ LottoGrottoApp.controller('LottoGrottoController',
 
         console.timeEnd('MDL');
 
+        console.table($s.MDL_Stats)
+
         $s.Update_SessionData();
     }
     //-Clear the Multi-Dimensional lottery results
     $scope.MDL_ClearUniversalLottery = function ()
     {
-        $s.MDL_Playing='No'; $s.MDL_Stats = [];
+        $s.MDL_Playing='No'; $s.MDL_Stats = []; $s.MDL_Wins = 0;
     }
     //---------------------------------------------------------------------/////
     //-Acknowledge session-update 
@@ -326,12 +357,17 @@ LottoGrottoApp.controller('LottoGrottoController',
 
     $scope.Get_MyResults = function ()
     {
+        if( $s.rc.st!='none' ) return;
+
+        $s.rc.st='load';
+
         //-Get my lotto numbers!
         Get_My_Numbers().then( (myNumbers) => {
 
             Get_Historical_Lotto_Results( myNumbers ).then( (results) => 
             {
                 $s.LottoResults = results;
+                $s.rc.st='done';
                 console.log("GOT MY RESULTS!!!!-->>>>>>>>>>>!");
                 $scope.$apply();
             })

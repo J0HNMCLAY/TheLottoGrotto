@@ -23,6 +23,15 @@
 .reload-button {
   color: var(--lightColor);
 }
+/*Override Jumbotron*/
+.jumbotron-override {
+  padding-top: 1rem;
+}
+
+/*Form group override*/
+.form-group-override{
+  margin-bottom: 0rem;
+}
 
 /*Override Bootstrap's .table td padding for small ball tables*/
 .ball-small-table .lotto-ball, 
@@ -39,6 +48,15 @@
   height: var(--ballSizeSmallSelected);
   width: var(--ballSizeSmallSelected);
   /* dragon involve pole lend crawl chest lemon fold illness shop heavy genius */
+}
+
+/*Override certain Bootstrap Cards*/
+.card-override {
+  border: 0px;
+}
+.card-body-override {
+  padding: 5px;
+  padding-bottom: 15px;
 }
 
 /*Override inputs*/
