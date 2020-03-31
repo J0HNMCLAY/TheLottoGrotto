@@ -22,7 +22,7 @@ LottoGrottoApp.controller('LottoGrottoController',
 
     //-General setup
     Setup_App();
-    Set_Start_Page('RESULTS');
+    Set_Start_Page('HOME');
 
     //-Dimensional Lotto Setup
     $s.MDL_GameType   = new MDL_GameType();
